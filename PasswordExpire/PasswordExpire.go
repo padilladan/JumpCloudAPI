@@ -63,6 +63,7 @@ type User struct {
 	Name string
 	ExpirationDate time.Time
 	Email string
+	ID string
 }
 
 func main() {
@@ -100,32 +101,70 @@ func main() {
 
 	count := 0
 	today := time.Now()
-	var nameArray []string
 	var passwordsExpiringSoon []User
-	var fullName string
 
 	for _ = range jcdata.Results{
 		t := jcdata.Results[count].PasswordExpirationDate
-		x := t.Format("02-Jan-2006")
-		fullName = jcdata.Results[count].Firstname + " " + jcdata.Results[count].Lastname + " " + x
 		firstLast := jcdata.Results[count].Firstname + " " + jcdata.Results[count].Lastname
-		nameArray = append(nameArray, fullName)
 
+		// Creates a struct of required user data - flush out unneeded info
 		staffMember := User{
 			Name: firstLast,
 			ExpirationDate: t,
 			Email: jcdata.Results[count].Email,
+			ID: jcdata.Results[count].ID,
 		}
-
-		count += 1
+		//////////////////////////////////////////////////////
 
 		expirationDate := today.AddDate(0,1,0)
 
+		// Only inserts users who have expiration dates within the next 30 days from today
 		if t.Before(expirationDate) {
 			if t.After(today) {
 				passwordsExpiringSoon = append(passwordsExpiringSoon, staffMember)
 			}
 		}
+		/////////////////////////////////////////////////////////////////////////////////
+		count += 1
 	}
-	fmt.Println(passwordsExpiringSoon)
+
+
+	// Loop to organize the users by expiration date
+	var orderedList []User
+	a := len(passwordsExpiringSoon)
+	complete := a * a
+
+	for i := 0 ; i < a ; i++ {
+		temp := i + 1
+		if temp == a {
+			orderedList = append(orderedList, passwordsExpiringSoon[i])
+			break
+		} else {
+			if passwordsExpiringSoon[i].ExpirationDate.Before(passwordsExpiringSoon[temp].ExpirationDate) {
+				orderedList = append(orderedList, passwordsExpiringSoon[i])
+			} else {
+				orderedList = append(orderedList, passwordsExpiringSoon[temp])
+			}
+		}
+	}
+
+	for i := 0 ; i == complete ; i ++ {
+		temp := i + 1
+		if temp == a {
+			orderedList = append(orderedList, orderedList[i])
+			break
+		} else {
+			if orderedList[i].ExpirationDate.Before(orderedList[temp].ExpirationDate) {
+				orderedList = append(orderedList, orderedList[i])
+			} else {
+				orderedList = append(orderedList, orderedList[temp])
+			}
+		}
+	}
+	/////////////////////////////////////////////////
+
+
+
+	fmt.Println(orderedList)
+	fmt.Println(len(orderedList))
 }
