@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -60,6 +61,13 @@ type bodystruct struct {
 
 func main() {
 
+	apiKey := os.Getenv("api")
+	if apiKey == "" {
+		fmt.Println("API Key missing")
+		os.Exit(1)
+	}
+	fmt.Println("The current API key used: ", apiKey)
+
 	url := "https://console.jumpcloud.com/api/systemusers"
 	method := "GET"
 
@@ -71,7 +79,7 @@ func main() {
 	}
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("x-api-key", "8699c0037f165deb108ca913fcc8a8ea853f5997")
+	req.Header.Add("x-api-key", apiKey)
 
 	res, err := client.Do(req)
 	defer res.Body.Close()
