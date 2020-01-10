@@ -59,6 +59,12 @@ type bodystruct struct {
 	} `json:"results"`
 }
 
+type User struct {
+	Name string
+	ExpirationDate time.Time
+	Email string
+}
+
 func main() {
 
 	apiKey := os.Getenv("api")
@@ -95,24 +101,31 @@ func main() {
 	count := 0
 	today := time.Now()
 	var nameArray []string
-	var passwordsExpiringSoon []string
+	var passwordsExpiringSoon []User
 	var fullName string
 
 	for _ = range jcdata.Results{
 		t := jcdata.Results[count].PasswordExpirationDate
 		x := t.Format("02-Jan-2006")
 		fullName = jcdata.Results[count].Firstname + " " + jcdata.Results[count].Lastname + " " + x
+		firstLast := jcdata.Results[count].Firstname + " " + jcdata.Results[count].Lastname
 		nameArray = append(nameArray, fullName)
+
+		staffMember := User{
+			Name: firstLast,
+			ExpirationDate: t,
+			Email: jcdata.Results[count].Email,
+		}
+
 		count += 1
 
 		expirationDate := today.AddDate(0,1,0)
 
 		if t.Before(expirationDate) {
 			if t.After(today) {
-				passwordsExpiringSoon = append(passwordsExpiringSoon, fullName)
+				passwordsExpiringSoon = append(passwordsExpiringSoon, staffMember)
 			}
 		}
 	}
-
 	fmt.Println(passwordsExpiringSoon)
 }
