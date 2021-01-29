@@ -1,5 +1,4 @@
 # JumpCloudAPI
-
 Using JumpCloud API, parsed commands to retrive data of users and groups.
 
 * All - Calls for a list of all users in the org
@@ -15,3 +14,8 @@ Using JumpCloud API, parsed commands to retrive data of users and groups.
 * getSystems - Uses JumpCloud webhook feature
 
 * Printers - Uses webhook to install printers on an Apple computer.
+
+
+
+
+* To use, export "api" JumpCloud key before running any Go file.
